@@ -27,6 +27,21 @@ from docx.oxml import OxmlElement
 
 INLINE_RE = re.compile(r'(\*\*.+?\*\*|\*[^*]+?\*|`[^`]+?`)')
 
+# Artefactos de exportacion desde Google Docs / Pandoc:
+#  - anclas al final de titulos:  "# **1. Introduccion** {#introduccion}"
+#  - enlaces de indice rotos:     "[1. Introduccion 3](#_heading=)"
+HEADING_ANCHOR_RE = re.compile(r'\s*\{#[^}]*\}\s*$')
+TOC_LINK_RE = re.compile(r'\[([^\]]*?)\s*\d*\]\(#_?[^)]*\)')
+
+
+def clean_gdocs_artifacts(text):
+    """Quita anclas {#...} de titulos y convierte enlaces de indice rotos
+    [Texto 3](#_heading=) en texto plano 'Texto'."""
+    text = HEADING_ANCHOR_RE.sub('', text)
+    # enlaces de indice: dejar solo el texto, sin el numero de pagina ni el link
+    text = TOC_LINK_RE.sub(lambda m: m.group(1).strip(), text)
+    return text
+
 
 def set_cell_background(cell, hex_color):
     tcPr = cell._tc.get_or_add_tcPr()
@@ -138,6 +153,13 @@ def convert(md_path, docx_path):
     while i < n:
         line = lines[i]
         stripped = line.strip()
+
+        # No tocar el contenido dentro de bloques de codigo
+        if not stripped.startswith('```'):
+            cleaned = clean_gdocs_artifacts(stripped)
+            if cleaned != stripped:
+                stripped = cleaned
+                line = cleaned
 
         # Bloque de código
         if stripped.startswith('```'):

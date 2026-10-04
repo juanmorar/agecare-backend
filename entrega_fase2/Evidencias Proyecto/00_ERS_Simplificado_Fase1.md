@@ -12,93 +12,93 @@ Javier Cerna · Juan Mora · Benja Camus
 
 **Índice**
 
-[1. Introducción 3](#_heading=)
+1. Introducción
 
-> [1.1 Propósito del documento 3](#_heading=)
+> 1.1 Propósito del documento
 >
-> [1.2 Alcance 3](#_heading=)
+> 1.2 Alcance
 
-[2. Problema 3](#_heading=)
+2. Problema
 
-[3. Objetivos 3](#_heading=)
+3. Objetivos
 
-> [3.1 Objetivo general 3](#_heading=)
+> 3.1 Objetivo general
 >
-> [3.2 Objetivos específicos 3](#_heading=)
+> 3.2 Objetivos específicos
 
-[4. Requisitos funcionales 4](#_heading=)
+4. Requisitos funcionales
 
-> [4.1 Autenticación y cuentas 4](#_heading=)
+> 4.1 Autenticación y cuentas
 >
-> [4.2 Pacientes y círculo de cuidado 4](#_heading=)
+> 4.2 Pacientes y círculo de cuidado
 >
-> [4.3 Salud y signos vitales 5](#_heading=)
+> 4.3 Salud y signos vitales
 >
-> [4.4 Medicamentos y adherencia 5](#_heading=)
+> 4.4 Medicamentos y adherencia
 >
-> [4.5 Bitácora del expediente 6](#_heading=)
+> 4.5 Bitácora del expediente
 >
-> [4.6 Archivos y documentos médicos 6](#_heading=)
+> 4.6 Archivos y documentos médicos
 >
-> [4.7 Alertas y emergencias 6](#_heading=)
+> 4.7 Alertas y emergencias
 >
-> [4.8 Comunicación 7](#_heading=)
+> 4.8 Comunicación
 >
-> [4.9 Vista del adulto mayor 7](#_heading=)
+> 4.9 Vista del adulto mayor
 >
-> [4.10 Operación diaria de la cuidadora 8](#_heading=)
+> 4.10 Operación diaria de la cuidadora
 >
-> [4.11 Marketplace 8](#_heading=)
+> 4.11 Marketplace
 >
-> [4.12 Funcionamiento sin conexión 8](#_heading=)
+> 4.12 Funcionamiento sin conexión
 
-[5. Requisitos no funcionales 10](#_heading=)
+5. Requisitos no funcionales
 
-> [5.1 Rendimiento 10](#_heading=)
+> 5.1 Rendimiento
 >
-> [5.2 Escalabilidad 10](#_heading=)
+> 5.2 Escalabilidad
 >
-> [5.3 Seguridad 10](#_heading=)
+> 5.3 Seguridad
 >
-> [5.4 Disponibilidad 11](#_heading=)
+> 5.4 Disponibilidad
 >
-> [5.5 Usabilidad y accesibilidad 11](#_heading=)
+> 5.5 Usabilidad y accesibilidad
 >
-> [5.6 Portabilidad y despliegue 11](#_heading=)
+> 5.6 Portabilidad y despliegue
 >
-> [5.7 Mantenibilidad 11](#_heading=)
+> 5.7 Mantenibilidad
 
-[6. Casos de uso 12](#_heading=)
+6. Casos de uso
 
-> [CU-01 --- Configurar el círculo de cuidado 12](#_heading=)
+> CU-01 --- Configurar el círculo de cuidado
 >
-> [CU-02 --- Registrar mediciones y detectar una anomalía 12](#_heading=)
+> CU-02 --- Registrar mediciones y detectar una anomalía
 >
-> [CU-03 --- Administrar una toma de medicamento 12](#_heading=)
+> CU-03 --- Administrar una toma de medicamento
 >
-> [CU-04 --- Digitalizar una receta médica 12](#_heading=)
+> CU-04 --- Digitalizar una receta médica
 >
-> [CU-05 --- Atender una emergencia 13](#_heading=)
+> CU-05 --- Atender una emergencia
 >
-> [CU-06 --- Consultar el estado del paciente al asistente 13](#_heading=)
+> CU-06 --- Consultar el estado del paciente al asistente
 >
-> [CU-07 --- Comunicarse desde la vista del adulto mayor 13](#_heading=)
+> CU-07 --- Comunicarse desde la vista del adulto mayor
 
-# **1. Introducción** {#introducción}
+# **1. Introducción**
 
-## **1.1 Propósito del documento** {#propósito-del-documento}
+## **1.1 Propósito del documento**
 
 Este documento especifica los requerimientos del sistema AgeCare: el problema que resuelve, los objetivos que persigue, lo que el sistema debe hacer y las condiciones de calidad que debe cumplir. Está dirigido al equipo de desarrollo, al docente de la asignatura y a la contraparte de la empresa.
 
 Sirve como referencia única del proyecto: toda decisión sobre lo que se construye debe poder rastrearse hasta lo que aquí está escrito.
 
-## **1.2 Alcance** {#alcance}
+## **1.2 Alcance**
 
 AgeCare es una plataforma de cuidado de adultos mayores con cuatro perfiles de usuario: el familiar, la cuidadora, el médico y el adulto mayor. El sistema reúne en un solo lugar la información de salud de la persona, genera alertas ante situaciones críticas y permite la comunicación entre quienes participan de su cuidado.
 
 El alcance de este documento cubre el seguimiento de salud a partir del wearable y de los registros de la cuidadora, la gestión de medicamentos y su adherencia, el sistema de alertas y emergencias, la comunicación entre los miembros del círculo de cuidado, y la vista propia del adulto mayor.
 
-# **2. Problema** {#problema}
+# **2. Problema**
 
 El cuidado de un adulto mayor dependiente recae casi siempre sobre su familia, y hoy se sostiene con herramientas que no fueron pensadas para eso. El reloj inteligente muestra sus datos en una aplicación aparte, la coordinación con la cuidadora ocurre por mensajería instantánea, las recetas médicas quedan como fotografías en el teléfono y lo que ocurre durante el día simplemente no se registra en ninguna parte.
 
@@ -110,13 +110,13 @@ En Chile el problema es amplio. Casi 4 millones de personas tienen 60 años o m�
 
 El problema de fondo no es la falta de dispositivos, sino que la información existe repartida y nunca se integra en un lugar único, confiable y compartido por quienes cuidan.
 
-# **3. Objetivos** {#objetivos}
+# **3. Objetivos**
 
-## **3.1 Objetivo general** {#objetivo-general}
+## **3.1 Objetivo general**
 
 Desarrollar una plataforma digital integral de cuidado de adultos mayores que centralice el monitoreo de salud, las alertas, la coordinación del cuidado y la comunicación entre familiares, cuidadores, médicos y el propio adulto mayor, con el fin de proporcionar a las familias que cuidan a distancia información confiable y en tiempo real sobre el bienestar de su ser querido, y al adulto mayor un medio accesible para mantenerse conectado, acompañado y activo.
 
-## **3.2 Objetivos específicos** {#objetivos-específicos}
+## **3.2 Objetivos específicos**
 
 1.  Consolidar en un expediente único y compartido la información de salud del adulto mayor ---signos vitales del wearable, adherencia a medicamentos, observaciones de la cuidadora, incidentes y documentos médicos---, presentada mediante un semáforo de bienestar diario y con soporte multi-paciente.
 
@@ -128,11 +128,11 @@ Desarrollar una plataforma digital integral de cuidado de adultos mayores que ce
 
 5.  Ofrecer al adulto mayor una experiencia propia, accesible y de voz primero, que lo integre como usuario activo de la plataforma: comunicación con su familia, fotografías compartidas, entretenimiento y creación musical mediante el módulo Director Musical.
 
-# **4. Requisitos funcionales** {#requisitos-funcionales}
+# **4. Requisitos funcionales**
 
 Los requisitos se agrupan por módulo funcional. La columna «Roles» indica quién puede ejecutar cada acción. «Sin autenticar» significa que no se requiere haber iniciado sesión; «Todos los roles» se refiere a familiar, cuidadora, médico y adulto mayor con sesión activa; «Automático» corresponde a procesos que ejecuta el propio sistema sin intervención del usuario.
 
-## **4.1 Autenticación y cuentas** {#autenticación-y-cuentas}
+## **4.1 Autenticación y cuentas**
 
 | **Código** | **Requisito** | **Roles** |
 |:---|----|----|
@@ -144,7 +144,7 @@ Los requisitos se agrupan por módulo funcional. La columna «Roles» indica qui
 | RF-06 | El sistema debe permitir a cada usuario consultar y modificar su perfil: nombre, teléfono, foto e idioma. | Todos los roles |
 | RF-07 | El sistema debe registrar el dispositivo del usuario para poder enviarle notificaciones. | Todos los roles |
 
-## **4.2 Pacientes y círculo de cuidado** {#pacientes-y-círculo-de-cuidado}
+## **4.2 Pacientes y círculo de cuidado**
 
 | **Código** | **Requisito** | **Roles** |
 |:---|----|----|
@@ -158,7 +158,7 @@ Los requisitos se agrupan por módulo funcional. La columna «Roles» indica qui
 | RF-15 | El sistema debe permitir vincular un wearable al paciente, admitiendo un solo dispositivo activo a la vez. | Familiar, Cuidadora |
 | RF-16 | El sistema debe informar el estado de sincronización del wearable: última medición, batería y si lleva demasiado tiempo sin enviar datos. | Todos los roles |
 
-## **4.3 Salud y signos vitales** {#salud-y-signos-vitales}
+## **4.3 Salud y signos vitales**
 
 | **Código** | **Requisito** | **Roles** |
 |:---|----|----|
@@ -170,7 +170,7 @@ Los requisitos se agrupan por módulo funcional. La columna «Roles» indica qui
 | RF-22 | El sistema debe calcular un indicador diario de bienestar a partir de las mediciones, la adherencia y los eventos del día, señalando los motivos del resultado. | Todos los roles |
 | RF-23 | El sistema debe entregar un resumen del estado de todos los pacientes del usuario, para quienes tienen más de uno a cargo. | Todos los roles |
 
-## **4.4 Medicamentos y adherencia** {#medicamentos-y-adherencia}
+## **4.4 Medicamentos y adherencia**
 
 | **Código** | **Requisito** | **Roles** |
 |:---|----|----|
@@ -185,7 +185,7 @@ Los requisitos se agrupan por módulo funcional. La columna «Roles» indica qui
 | RF-32 | El sistema debe generar automáticamente las tomas del día siguiente según la zona horaria del paciente. | Automático |
 | RF-33 | El sistema debe marcar como omitida toda toma no confirmada dentro de su plazo y notificarlo al familiar. | Automático |
 
-## **4.5 Bitácora del expediente** {#bitácora-del-expediente}
+## **4.5 Bitácora del expediente**
 
 | **Código** | **Requisito** | **Roles** |
 |:---|----|----|
@@ -195,7 +195,7 @@ Los requisitos se agrupan por módulo funcional. La columna «Roles» indica qui
 | RF-37 | El sistema debe permitir dejar y consultar notas de relevo entre turnos. | Cuidadora, Familiar |
 | RF-38 | El sistema debe permitir al adulto mayor registrar cómo se siente, admitiendo un registro por día que reemplaza al anterior. | Adulto mayor |
 
-## **4.6 Archivos y documentos médicos** {#archivos-y-documentos-médicos}
+## **4.6 Archivos y documentos médicos**
 
 | **Código** | **Requisito** | **Roles** |
 |:---|----|----|
@@ -205,7 +205,7 @@ Los requisitos se agrupan por módulo funcional. La columna «Roles» indica qui
 | RF-42 | El sistema debe permitir descargar o visualizar un documento mediante un enlace temporal de corta duración. | Todos los roles |
 | RF-43 | El sistema debe permitir eliminar un documento conservando el registro, y depurar el archivo posteriormente. | Familiar (admin.), autor |
 
-## **4.7 Alertas y emergencias** {#alertas-y-emergencias}
+## **4.7 Alertas y emergencias**
 
 | **Código** | **Requisito** | **Roles** |
 |:---|----|----|
@@ -219,7 +219,7 @@ Los requisitos se agrupan por módulo funcional. La columna «Roles» indica qui
 | RF-51 | El sistema debe permitir activar una emergencia mediante un botón, generando una alerta crítica, notificando de inmediato a todos los familiares, registrando el evento y entregando los teléfonos de contacto. | Cuidadora, Adulto mayor |
 | RF-52 | El sistema debe escalar la alerta a los siguientes contactos definidos cuando nadie la atienda dentro del plazo establecido. | Automático |
 
-## **4.8 Comunicación** {#comunicación}
+## **4.8 Comunicación**
 
 | **Código** | **Requisito** | **Roles** |
 |:---|----|----|
@@ -231,7 +231,7 @@ Los requisitos se agrupan por módulo funcional. La columna «Roles» indica qui
 | RF-58 | El sistema debe permitir invocar al asistente dentro de la conversación entre personas y publicar su respuesta como un mensaje más del canal. | Todos los roles |
 | RF-59 | El sistema debe conservar el historial de conversaciones con el asistente. | Todos los roles |
 
-## **4.9 Vista del adulto mayor** {#vista-del-adulto-mayor}
+## **4.9 Vista del adulto mayor**
 
 | **Código** | **Requisito** | **Roles** |
 |:---|----|----|
@@ -246,7 +246,7 @@ Los requisitos se agrupan por módulo funcional. La columna «Roles» indica qui
 | RF-68 | El sistema debe permitir vincular el dispositivo del adulto mayor mediante un código simple, sin que deba introducir credenciales. | Cuidadora, Familiar |
 | RF-69 | El sistema debe registrar métricas de uso por sesión de actividad del adulto mayor, para seguimiento de sus cuidadores. | Automático |
 
-## **4.10 Operación diaria de la cuidadora** {#operación-diaria-de-la-cuidadora}
+## **4.10 Operación diaria de la cuidadora**
 
 | **Código** | **Requisito** | **Roles** |
 |:---|----|----|
@@ -256,7 +256,7 @@ Los requisitos se agrupan por módulo funcional. La columna «Roles» indica qui
 | RF-73 | El sistema debe distinguir entre funciones gratuitas y funciones de pago, impidiendo el acceso a estas últimas sin una suscripción vigente. | Automático |
 | RF-74 | El sistema debe permitir generar reportes de la actividad realizada en un rango de fechas. | Cuidadora |
 
-## **4.11 Marketplace** {#marketplace}
+## **4.11 Marketplace**
 
 | **Código** | **Requisito** | **Roles** |
 |:---|----|----|
@@ -266,7 +266,7 @@ Los requisitos se agrupan por módulo funcional. La columna «Roles» indica qui
 | RF-78 | El sistema debe permitir dejar una reseña únicamente a quien haya tenido a la cuidadora en su círculo de cuidado, y solo una vez. | Familiar |
 | RF-79 | El sistema debe permitir consultar el catálogo de artículos de apoyo por categoría. | Familiar, Cuidadora |
 
-## **4.12 Funcionamiento sin conexión** {#funcionamiento-sin-conexión}
+## **4.12 Funcionamiento sin conexión**
 
 | **Código** | **Requisito** | **Roles** |
 |:---|----|----|
@@ -274,11 +274,11 @@ Los requisitos se agrupan por módulo funcional. La columna «Roles» indica qui
 | RF-81 | La aplicación debe sincronizar con el servidor los registros generados sin conexión al restablecerse la señal, sin duplicarlos ni perderlos. | Automático |
 | RF-82 | El sistema debe ofrecer una vía alternativa de aviso cuando la notificación al teléfono no pueda entregarse. | Automático |
 
-# **5. Requisitos no funcionales** {#requisitos-no-funcionales}
+# **5. Requisitos no funcionales**
 
 Los requisitos no funcionales definen las condiciones de calidad que el sistema debe cumplir. Cada uno se expresa con un criterio verificable.
 
-## **5.1 Rendimiento** {#rendimiento}
+## **5.1 Rendimiento**
 
 | **Código** | **Requisito** | **Criterio de cumplimiento** |
 |:---|----|----|
@@ -288,7 +288,7 @@ Los requisitos no funcionales definen las condiciones de calidad que el sistema 
 | RNF-04 | Latencia de alertas críticas | Una caída detectada debe generar la alerta y el aviso al teléfono en menos de 10 segundos. |
 | RNF-05 | Entrega de notificaciones | Una notificación debe llegar al dispositivo en menos de 30 segundos. |
 
-## **5.2 Escalabilidad** {#escalabilidad}
+## **5.2 Escalabilidad**
 
 | **Código** | **Requisito** | **Criterio de cumplimiento** |
 |:---|----|----|
@@ -296,7 +296,7 @@ Los requisitos no funcionales definen las condiciones de calidad que el sistema 
 | RNF-07 | Crecimiento de las mediciones | La tabla de mediciones debe estar particionada por mes para mantener el rendimiento de las consultas históricas. |
 | RNF-08 | Ingesta repetible | El envío duplicado de un mismo lote no debe generar registros repetidos ni alertas repetidas. |
 
-## **5.3 Seguridad** {#seguridad}
+## **5.3 Seguridad**
 
 | **Código** | **Requisito** | **Criterio de cumplimiento** |
 |:---|----|----|
@@ -308,7 +308,7 @@ Los requisitos no funcionales definen las condiciones de calidad que el sistema 
 | RNF-14 | Trazabilidad clínica | El sistema debe registrar qué usuario consultó qué expediente y cuándo. |
 | RNF-15 | Cifrado en reposo | La base de datos y los archivos almacenados deben estar cifrados en reposo. |
 
-## **5.4 Disponibilidad** {#disponibilidad}
+## **5.4 Disponibilidad**
 
 | **Código** | **Requisito** | **Criterio de cumplimiento** |
 |:---|----|----|
@@ -316,7 +316,7 @@ Los requisitos no funcionales definen las condiciones de calidad que el sistema 
 | RNF-17 | Respaldos | La base de datos debe contar con respaldos automáticos y con un procedimiento de restauración verificado. |
 | RNF-18 | Estabilidad de la aplicación | La aplicación debe mantener una tasa de sesiones sin fallos igual o superior al 99,5 %. |
 
-## **5.5 Usabilidad y accesibilidad** {#usabilidad-y-accesibilidad}
+## **5.5 Usabilidad y accesibilidad**
 
 | **Código** | **Requisito** | **Criterio de cumplimiento** |
 |:---|----|----|
@@ -324,25 +324,25 @@ Los requisitos no funcionales definen las condiciones de calidad que el sistema 
 | RNF-20 | Interacción por voz | La vista del adulto mayor debe permitir completar sus acciones principales sin usar el teclado. |
 | RNF-21 | Idioma | La interfaz y los mensajes de error deben estar en español. |
 
-## **5.6 Portabilidad y despliegue** {#portabilidad-y-despliegue}
+## **5.6 Portabilidad y despliegue**
 
 | **Código** | **Requisito** | **Criterio de cumplimiento** |
 |:---|----|----|
 | RNF-22 | Contenedores | El servidor y la base de datos deben ejecutarse en contenedores Docker y levantarse mediante un único archivo de composición. |
 | RNF-23 | Configuración externa | Las credenciales y parámetros del entorno deben definirse mediante variables de entorno, sin quedar escritos en el código. |
 
-## **5.7 Mantenibilidad** {#mantenibilidad}
+## **5.7 Mantenibilidad**
 
 | **Código** | **Requisito** | **Criterio de cumplimiento** |
 |:---|----|----|
 | RNF-24 | Control de cambios en la base de datos | Todo cambio de estructura debe aplicarse mediante migraciones versionadas y reversibles. |
 | RNF-25 | Documentación de la interfaz | La documentación de los servicios debe generarse automáticamente a partir del código. |
 
-# **6. Casos de uso** {#casos-de-uso}
+# **6. Casos de uso**
 
 Se describen los casos de uso principales del sistema. Cada uno indica el actor que lo inicia, las condiciones previas, el flujo principal, el resultado esperado y los requisitos funcionales que cubre.
 
-## **CU-01 --- Configurar el círculo de cuidado** {#cu-01-configurar-el-círculo-de-cuidado}
+## **CU-01 --- Configurar el círculo de cuidado**
 
 **Actor:** Familiar (administrador)
 
@@ -364,7 +364,7 @@ Se describen los casos de uso principales del sistema. Cada uno indica el actor 
 
 **Requisitos cubiertos:** RF-08 a RF-16
 
-## **CU-02 --- Registrar mediciones y detectar una anomalía** {#cu-02-registrar-mediciones-y-detectar-una-anomalía}
+## **CU-02 --- Registrar mediciones y detectar una anomalía**
 
 **Actor:** Sistema, wearable
 
@@ -386,7 +386,7 @@ Se describen los casos de uso principales del sistema. Cada uno indica el actor 
 
 **Requisitos cubiertos:** RF-17, RF-20, RF-22, RF-44, RF-45
 
-## **CU-03 --- Administrar una toma de medicamento** {#cu-03-administrar-una-toma-de-medicamento}
+## **CU-03 --- Administrar una toma de medicamento**
 
 **Actor:** Cuidadora
 
@@ -410,7 +410,7 @@ Se describen los casos de uso principales del sistema. Cada uno indica el actor 
 
 **Requisitos cubiertos:** RF-28, RF-29, RF-30, RF-33
 
-## **CU-04 --- Digitalizar una receta médica** {#cu-04-digitalizar-una-receta-médica}
+## **CU-04 --- Digitalizar una receta médica**
 
 **Actor:** Cuidadora o médico
 
@@ -434,7 +434,7 @@ Se describen los casos de uso principales del sistema. Cada uno indica el actor 
 
 **Requisitos cubiertos:** RF-31, RF-24, RF-40
 
-## **CU-05 --- Atender una emergencia** {#cu-05-atender-una-emergencia}
+## **CU-05 --- Atender una emergencia**
 
 **Actor:** Cuidadora o adulto mayor
 
@@ -458,7 +458,7 @@ Se describen los casos de uso principales del sistema. Cada uno indica el actor 
 
 **Requisitos cubiertos:** RF-48, RF-49, RF-51, RF-52
 
-## **CU-06 --- Consultar el estado del paciente al asistente** {#cu-06-consultar-el-estado-del-paciente-al-asistente}
+## **CU-06 --- Consultar el estado del paciente al asistente**
 
 **Actor:** Familiar, cuidadora o médico
 
@@ -480,7 +480,7 @@ Se describen los casos de uso principales del sistema. Cada uno indica el actor 
 
 **Requisitos cubiertos:** RF-56, RF-57, RF-59
 
-## **CU-07 --- Comunicarse desde la vista del adulto mayor** {#cu-07-comunicarse-desde-la-vista-del-adulto-mayor}
+## **CU-07 --- Comunicarse desde la vista del adulto mayor**
 
 **Actor:** Adulto mayor
 
