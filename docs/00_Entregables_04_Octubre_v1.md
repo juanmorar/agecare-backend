@@ -35,8 +35,10 @@ construido ocurre al cierre de la Fase 2.
 | 2 | Definición de historias de usuario | `02_Historias_de_Usuario_v1.md` | ✅ |
 | 3 | Modelo de datos definitivo | `03_Modelo_de_Datos_Definitivo_v1.md` | ✅ |
 | 4 | Entregables en base a la planificación | Este índice + matrices de trazabilidad | ✅ |
+| — | *(Respaldo)* Análisis de realidad y decisiones de diseño | `04_Analisis_de_Realidad_y_Decisiones.md` | ✅ |
 | — | *(Respaldo)* Normalización del modelo (2FN) | `Normalizacion_2FN_AgeCare.md` | ✅ |
-| — | *(Respaldo)* Esquema SQL ejecutable (20 tablas) | `sql/*.sql` | ✅ |
+| — | *(Respaldo)* Esquema SQL ejecutable (24 tablas) | `sql/*.sql` + `sql/000_schema_completo.sql` | ✅ |
+| — | *(Respaldo)* Diagramas ER | `ER_AgeCare.dbml` · `ER_AgeCare_Mermaid.md` | ✅ |
 | — | *(Respaldo)* ERS simplificado (Fase 1, fuente de requisitos) | `Documento de Requerimientos (ERS simplificado).md` | ✅ |
 
 ---
@@ -53,7 +55,7 @@ ERS simplificado (Fase 1)  ──  RF-01…82 / RNF-01…25     ← fuente de ve
 02 · Historias de usuario           (HU-01…39 derivadas de los RF, con CU-01…07)
         │
         ▼
-03 · Modelo de datos definitivo     (20 tablas ↔ RF del ERS)
+03 · Modelo de datos definitivo     (24 tablas ↔ RF del ERS)
         │
         ▼
 Esquema SQL ejecutable (sql/*.sql) + API FastAPI
@@ -76,7 +78,7 @@ Carta Gantt del 1.5  (Fase 1 → Fase 2 → Fase 3)
 | Medicamentos y adherencia | RF-24…33 | HU-17…22 | `medications`, `medication_times`, `medication_days`, `scheduled_doses` | ✅ 100% (OCR = lógica de app) |
 | Alertas y emergencias | RF-44…52 | HU-23…26 | `alerts`, `alert_deliveries`, `notification_settings`, `emergency_contacts`, `sos_events` | ✅ 100% |
 
-**26 historias del núcleo trazadas al ERS y respaldadas por 20 tablas (25 con soporte directo
+**26 historias del núcleo trazadas al ERS y respaldadas por 24 tablas (25 con soporte directo
 en el modelo; la digitalización de recetas por OCR, HU-22, es lógica de aplicación sobre las
 mismas tablas de medicamentos). Cero requisitos del núcleo sin soporte de datos.**
 
@@ -101,20 +103,26 @@ definitivo es una base estable, coherente con el avance secuencial de la metodol
 ## 5. Decisiones de diseño que respaldan la planificación
 
 1. **Modelo relacional normalizado hasta 2FN** — revisión completa documentada en
-   `Normalizacion_2FN_AgeCare.md`: 8 correcciones estructurales + 4 excepciones técnicas
+   `Normalizacion_2FN_AgeCare.md`: 11 correcciones estructurales + 4 excepciones técnicas
    justificadas. Sin persistencia documental ni NoSQL (todo PostgreSQL).
 
-2. **Control de acceso centralizado** — `patient_members` es el único punto de verificación de
+2. **Análisis de realidad** — el documento `04_Analisis_de_Realidad_y_Decisiones.md` anticipa
+   los escenarios del mundo real (wearable apagado, dosis registrada tarde, negligencia humana,
+   olvido) y nombra explícitamente el límite entre lo que la tecnología garantiza y lo que
+   depende del factor humano. De ahí nacen las tablas `audit_log`, `system_parameters`,
+   `wellbeing_snapshots` y `subscriptions`.
+
+3. **Control de acceso centralizado** — `patient_members` es el único punto de verificación de
    permisos, cumpliendo RF-11…14 y RNF-12 sin dispersar la lógica.
 
-3. **Escalabilidad desde el diseño** — `vital_readings` particionada por mes (RNF-07),
+4. **Escalabilidad desde el diseño** — `vital_readings` particionada por mes (RNF-07),
    anticipando el volumen de telemetría del wearable.
 
-4. **Trazabilidad de notificaciones** — `alert_deliveries` permite medir las latencias que
-   exigen RNF-04 y RNF-05 (pilar de alertas).
+5. **Trazabilidad clínica inmutable** — `audit_log` registra quién accedió o modificó qué, con
+   un trigger que impide alterar o borrar la evidencia (RNF-14).
 
-5. **Catálogo único de tipos** — `vital_types` evita duplicar definiciones y prepara el sistema
-   para nuevos signos vitales sin tocar código.
+6. **Catálogo único de tipos y parámetros configurables** — `vital_types` evita duplicar
+   definiciones; `system_parameters` saca los umbrales de negocio del código.
 
 ---
 
@@ -131,7 +139,7 @@ avaladas en la revisión de Fase 1.
 ## 7. Resumen ejecutivo para la entrega
 
 > El avance del 04 de octubre cierra el **Diseño del Sistema** de la Fase 2 con el **modelo de
-> datos definitivo** (20 tablas en PostgreSQL, normalizado hasta 2FN) que soporta el **100% del
+> datos definitivo** (24 tablas en PostgreSQL, normalizado hasta 2FN) que soporta el **100% del
 > núcleo de salud** (RF-01…33 y RF-44…52) y las 26 historias de usuario del núcleo, todas
 > trazadas al ERS aprobado en Fase 1. El esquema es ejecutable (`sql/*.sql`) y ya está consumido por la API en
 > FastAPI. Los módulos restantes del ERS están especificados y declarados, y se completan en el
@@ -142,4 +150,6 @@ avaladas en la revisión de Fase 1.
 2. `01_Definicion_Requerimientos_v1.md`
 3. `02_Historias_de_Usuario_v1.md`
 4. `03_Modelo_de_Datos_Definitivo_v1.md`
-5. `Normalizacion_2FN_AgeCare.md` (respaldo del diseño)
+5. `04_Analisis_de_Realidad_y_Decisiones.md` (anticipa preguntas de evaluadores)
+6. `Normalizacion_2FN_AgeCare.md` (respaldo del diseño)
+7. Diagramas ER: `ER_AgeCare.dbml` / `ER_AgeCare_Mermaid.md`
