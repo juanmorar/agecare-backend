@@ -3,7 +3,7 @@
 **Proyecto APT · Capstone PTY4614 · DUOC UC — Grupo 1**
 **Equipo:** Javier Cerna Chávez · Benjamín Camus · Juan Mora
 **Motor:** PostgreSQL 16 · Modelo relacional normalizado hasta 2FN
-**Fuente:** `sql/000_schema_completo.sql` (24 tablas)
+**Fuente:** `sql/schema/000_schema_completo.sql` (24 tablas)
 
 ---
 

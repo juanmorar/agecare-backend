@@ -37,7 +37,7 @@ construido ocurre al cierre de la Fase 2.
 | 4 | Entregables en base a la planificación | Este índice + matrices de trazabilidad | ✅ |
 | — | *(Respaldo)* Análisis de realidad y decisiones de diseño | `04_Analisis_de_Realidad_y_Decisiones.md` | ✅ |
 | — | *(Respaldo)* Normalización del modelo (2FN) | `Normalizacion_2FN_AgeCare.md` | ✅ |
-| — | *(Respaldo)* Esquema SQL ejecutable (24 tablas) | `sql/*.sql` + `sql/000_schema_completo.sql` | ✅ |
+| — | *(Respaldo)* Esquema SQL ejecutable (24 tablas) | `sql/*.sql` + `sql/schema/000_schema_completo.sql` | ✅ |
 | — | *(Respaldo)* Diagramas ER | `ER_AgeCare.dbml` · `ER_AgeCare_Mermaid.md` | ✅ |
 | — | *(Respaldo)* ERS simplificado (Fase 1, fuente de requisitos) | `Documento de Requerimientos (ERS simplificado).md` | ✅ |
 

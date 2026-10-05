@@ -102,7 +102,7 @@ una etapa del plan en cascada.
 | --- | ----------------------------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------- |
 | E1  | **Documento de Requerimientos (ERS)**     | `docs/Documento de Requerimientos (ERS simplificado).md` | Etapa de Análisis: 82 RF, 25 RNF, 7 casos de uso. Contrato de alcance.    |
 | E2  | **Modelo de datos definitivo**            | `docs/03_Modelo_de_Datos_Definitivo_v1.md` + `sql/*.sql` | Etapa de Diseño: 24 tablas, 2FN, integridad referencial.                  |
-| E3  | **Script SQL ejecutable**                 | `sql/000_schema_completo.sql` + 22 scripts numerados     | Implementación verificable de la BD; reconstruible desde cero.            |
+| E3  | **Script SQL ejecutable**                 | `sql/schema/000_schema_completo.sql` + 22 scripts numerados     | Implementación verificable de la BD; reconstruible desde cero.            |
 | E4  | **Diagramas Entidad-Relación**            | `docs/ER_AgeCare.dbml` · `docs/ER_AgeCare_Mermaid.md`    | Diseño visual del modelo (dbdiagram.io y Mermaid).                        |
 | E5  | **API REST desplegada**                   | https://agecare-api.javiercerna.dev/docs                 | Implementación del backend operando en infraestructura real.              |
 | E6  | **Documento de normalización 2FN**        | `docs/Normalizacion_2FN_AgeCare.md`                      | Rigor de diseño: 15 hallazgos, 11 corregidos, 4 excepciones justificadas. |

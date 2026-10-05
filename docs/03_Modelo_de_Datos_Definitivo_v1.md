@@ -5,7 +5,7 @@
 **Metodología:** Enfoque Tradicional (Cascada) · **Entrega:** 04 de octubre (avance Fase 2)
 **Motor:** PostgreSQL 16 · Modelo relacional normalizado hasta 2FN (excepciones técnicas documentadas)
 **Scripts fuente:** `sql/001_base.sql` … `sql/501_subscriptions.sql` + `sql/900_seed_dev.sql`
-**Script consolidado:** `sql/000_schema_completo.sql` (todo el esquema en un solo archivo ejecutable)
+**Script consolidado:** `sql/schema/000_schema_completo.sql` (todo el esquema en un solo archivo ejecutable)
 **Diagramas ER:** `docs/ER_AgeCare.dbml` (dbdiagram.io → PNG/PDF) · `docs/ER_AgeCare_Mermaid.md` (se renderiza en GitHub)
 **Análisis de realidad:** `docs/04_Analisis_de_Realidad_y_Decisiones.md` (escenarios del mundo real y decisiones de diseño)
 

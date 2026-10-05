@@ -1,3 +1,4 @@
+
 # AgeCare — Historias de Usuario
 
 **Proyecto APT · Capstone PTY4614 · DUOC UC — Sede San Andrés**
