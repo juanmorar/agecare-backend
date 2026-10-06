@@ -48,7 +48,7 @@ con el estado de cada corrección **ya aplicada** al repositorio.
 ```sql
 CREATE TABLE patient_conditions (
     id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    patient_id uuid NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+    patient_id uuid NOT NULL REFERENCES patients(id) ON DELETE RESTRICT,
     condition  varchar(80) NOT NULL,
     diagnosed_at date,
     CONSTRAINT uq_patient_condition UNIQUE (patient_id, condition)
@@ -68,12 +68,12 @@ full_name  varchar(121) GENERATED ALWAYS AS (first_name || ' ' || last_name) STO
 ```sql
 CREATE TABLE medication_times (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    medication_id uuid NOT NULL REFERENCES medications(id) ON DELETE CASCADE,
+    medication_id uuid NOT NULL REFERENCES medications(id) ON DELETE RESTRICT,
     time_of_day   time NOT NULL,
     UNIQUE (medication_id, time_of_day)
 );
 CREATE TABLE medication_days (
-    medication_id uuid NOT NULL REFERENCES medications(id) ON DELETE CASCADE,
+    medication_id uuid NOT NULL REFERENCES medications(id) ON DELETE RESTRICT,
     day_of_week   smallint CHECK (day_of_week BETWEEN 1 AND 7),
     PRIMARY KEY (medication_id, day_of_week)
 );
@@ -157,7 +157,7 @@ por FK. El orden actual lo garantiza:
 ## Lo que ya estaba bien
 
 - Todas las tablas tienen PK (`uuid`). ✅
-- Foreign keys con política correcta (`CASCADE` / `SET NULL`). ✅
+- Foreign keys con política de conservación (`ON DELETE RESTRICT`, sin borrado físico). ✅
 - Índices parciales (`WHERE deleted_at IS NULL`) correctos. ✅
 - Soft-delete en registros clínicos. ✅
 - Partición mensual de `vital_readings` justificada por volumen (RNF-07). ✅

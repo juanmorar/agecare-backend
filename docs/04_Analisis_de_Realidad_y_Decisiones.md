@@ -186,7 +186,7 @@ máximo que la disciplina permite.
 
 ## 5. Resumen de robustez del modelo
 
-- **Integridad referencial:** todas las FK con política explícita (`CASCADE` / `SET NULL`).
+- **Integridad referencial:** todas las FK con `ON DELETE RESTRICT` (política de conservación: no se borra físicamente, se desactiva para preservar el histórico).
 - **Integridad de dominio:** `CHECK` de estados, rangos, coherencia temporal y enums cerrados.
 - **Normalización:** hasta 2FN, con excepciones técnicas y de atributos variables documentadas.
 - **Trazabilidad:** `audit_log` inmutable (RNF-14) + `logged_by`/`administered_at`.

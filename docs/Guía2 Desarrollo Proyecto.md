@@ -122,7 +122,7 @@ la industria del desarrollo de software y de la ingeniería de datos:
 - **Normalización formal hasta 2FN**, con un documento que audita cada decisión y justifica las
   excepciones técnicas (particionamiento, atributos variables).
 - **Integridad referencial** garantizada por claves foráneas con política explícita
-  (`ON DELETE CASCADE` / `SET NULL`) e **integridad de dominio** mediante restricciones `CHECK`.
+  (`ON DELETE RESTRICT`, sin borrado físico) e **integridad de dominio** mediante restricciones `CHECK`.
 - **Control de versiones Git** con commits atómicos y descriptivos por módulo, lo que permite
   trazar la evolución y la autoría.
 - **Contenerización con Docker** (`docker-compose.yml`) y **configuración por variables de

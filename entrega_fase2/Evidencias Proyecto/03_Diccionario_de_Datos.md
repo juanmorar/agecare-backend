@@ -13,7 +13,11 @@
 - Los tipos corresponden a PostgreSQL: `uuid`, `varchar(n)`, `text`, `timestamptz` (fecha-hora
   con zona), `date`, `time`, `numeric(p,e)`, `smallint`, `boolean`, `jsonb`, `inet`.
 - "GENERATED" indica columna calculada por la base (solo lectura).
-- Política de borrado en FK: `CASCADE` (borra en cascada) o `SET NULL` (anula la referencia).
+- Política de borrado en FK: todas las claves foráneas usan `ON DELETE RESTRICT`. El modelo
+  **no admite borrado físico**: el motor impide eliminar una fila con registros asociados. La
+  baja de un registro se hace por desactivación (columnas `deleted_at`, `removed_at`,
+  `unlinked_at`, `discontinued_at`, `revoked_at`, `cancelled_at`), conservando el dato histórico
+  para análisis posterior y trazabilidad clínica.
 
 ---
 
@@ -42,7 +46,7 @@
 | Columna | Tipo | Restricciones | Descripción |
 |---|---|---|---|
 | id | uuid | PK | Identificador del registro de sesión. |
-| user_id | uuid | FK → users (CASCADE), NN | Dueño de la sesión. |
+| user_id | uuid | FK → users (RESTRICT), NN | Dueño de la sesión. |
 | family_id | uuid | NN | Agrupa los tokens de un mismo inicio de sesión (rotación). |
 | token_hash | varchar(64) | NN, UK | SHA-256 del token. Nunca el token en claro. |
 | expires_at | timestamptz | NN | Vencimiento (30 días). |
@@ -55,7 +59,7 @@
 | Columna | Tipo | Restricciones | Descripción |
 |---|---|---|---|
 | id | uuid | PK | Identificador del dispositivo. |
-| user_id | uuid | FK → users (CASCADE), NN | Dueño actual del dispositivo. |
+| user_id | uuid | FK → users (RESTRICT), NN | Dueño actual del dispositivo. |
 | push_token | varchar(255) | NN, UK | Token de FCM/APNs. Identifica la instalación. |
 | platform | varchar(10) | NN | ios / android / web. |
 | is_active | boolean | NN, def. true | false = sesión cerrada o token inválido. |
@@ -86,7 +90,7 @@
 | Columna | Tipo | Restricciones | Descripción |
 |---|---|---|---|
 | id | uuid | PK | Identificador de la condición. |
-| patient_id | uuid | FK → patients (CASCADE), NN | Paciente al que pertenece. |
+| patient_id | uuid | FK → patients (RESTRICT), NN | Paciente al que pertenece. |
 | condition | varchar(80) | NN, UK (patient_id, condition) | Padecimiento (ej. hipertension). |
 | diagnosed_at | date | | Fecha de diagnóstico. Opcional. |
 | created_at | timestamptz | NN | Fecha de registro. |
@@ -96,8 +100,8 @@
 | Columna | Tipo | Restricciones | Descripción |
 |---|---|---|---|
 | id | uuid | PK | Identificador del vínculo. |
-| patient_id | uuid | FK → patients (CASCADE), NN | Paciente. |
-| user_id | uuid | FK → users (CASCADE), NN | Usuario. |
+| patient_id | uuid | FK → patients (RESTRICT), NN | Paciente. |
+| user_id | uuid | FK → users (RESTRICT), NN | Usuario. |
 | role | varchar(10) | NN | family / caregiver / doctor / elder. |
 | is_owner | boolean | NN, def. false | Administrador del paciente (solo rol family). |
 | created_at | timestamptz | NN | Alta del vínculo. |
@@ -111,14 +115,14 @@
 | Columna | Tipo | Restricciones | Descripción |
 |---|---|---|---|
 | id | uuid | PK | Identificador de la invitación. |
-| patient_id | uuid | FK → patients (CASCADE), NN | Paciente al que se invita. |
+| patient_id | uuid | FK → patients (RESTRICT), NN | Paciente al que se invita. |
 | email | varchar(320) | NN | Correo del invitado (puede no tener cuenta). |
 | role | varchar(10) | NN | Rol a asignar: family/caregiver/doctor/elder. |
 | token_hash | varchar(64) | NN, UK | SHA-256 del token de invitación. |
-| invited_by | uuid | FK → users (CASCADE), NN | Quién envió la invitación. |
+| invited_by | uuid | FK → users (RESTRICT), NN | Quién envió la invitación. |
 | expires_at | timestamptz | NN | Vencimiento (7 días). |
 | accepted_at | timestamptz | | Momento de aceptación. |
-| accepted_by | uuid | FK → users (SET NULL) | Usuario que aceptó. |
+| accepted_by | uuid | FK → users (RESTRICT) | Usuario que aceptó. |
 | revoked_at | timestamptz | | Anulación antes de aceptar. |
 | created_at | timestamptz | NN | Creación. |
 | updated_at | timestamptz | NN | Última modificación (trigger). |
@@ -128,11 +132,11 @@
 | Columna | Tipo | Restricciones | Descripción |
 |---|---|---|---|
 | id | uuid | PK | Identificador del registro de auditoría. |
-| actor_user_id | uuid | FK → users (SET NULL) | Quién ejecutó la acción. |
+| actor_user_id | uuid | FK → users (RESTRICT) | Quién ejecutó la acción. |
 | action | varchar(40) | NN | Verbo del dominio (view_record, dose_log, alert_ack…). |
 | entity_type | varchar(40) | NN | Entidad afectada (tabla lógica). |
 | entity_id | uuid | | Identificador de la entidad afectada. |
-| patient_id | uuid | FK → patients (SET NULL) | Paciente del expediente afectado. |
+| patient_id | uuid | FK → patients (RESTRICT) | Paciente del expediente afectado. |
 | old_value | jsonb | | Estado anterior en un cambio (atributos variables). |
 | new_value | jsonb | | Estado nuevo en un cambio. |
 | ip_address | inet | | IP de origen de la petición. |
@@ -149,7 +153,7 @@
 | value | varchar(120) | NN | Valor del parámetro (como texto). |
 | value_type | varchar(20) | NN, def. 'int' | int/minutes/hours/decimal/bool/text. |
 | description | varchar(300) | NN | Descripción del parámetro. |
-| updated_by | uuid | FK → users (SET NULL) | Último administrador que lo modificó. |
+| updated_by | uuid | FK → users (RESTRICT) | Último administrador que lo modificó. |
 | updated_at | timestamptz | NN | Última modificación (trigger). |
 
 ---
@@ -170,7 +174,7 @@
 | Columna | Tipo | Restricciones | Descripción |
 |---|---|---|---|
 | id | uuid | PK | Identificador del wearable. |
-| patient_id | uuid | FK → patients (CASCADE), NN | Paciente dueño del dispositivo. |
+| patient_id | uuid | FK → patients (RESTRICT), NN | Paciente dueño del dispositivo. |
 | provider | varchar(20) | NN, def. 'simulator' | Origen de datos: simulator/healthkit/garmin/… |
 | serial_number | varchar(64) | NN | Número de serie del aparato. |
 | model | varchar(60) | | Modelo del aparato. |
@@ -187,7 +191,7 @@
 | Columna | Tipo | Restricciones | Descripción |
 |---|---|---|---|
 | id | uuid | PK (id, measured_at) | Identificador de la lectura. |
-| patient_id | uuid | FK → patients (CASCADE), NN | Paciente al que pertenece. |
+| patient_id | uuid | FK → patients (RESTRICT), NN | Paciente al que pertenece. |
 | type | varchar(16) | FK → vital_types.code, NN | Tipo de signo vital. |
 | value | numeric(8,2) | NN, CHECK 0–100000 | Valor principal (sistólica en presión). |
 | value_secondary | numeric(8,2) | solo blood_pressure | Diastólica. NULL en los demás tipos. |
@@ -203,11 +207,11 @@
 | Columna | Tipo | Restricciones | Descripción |
 |---|---|---|---|
 | id | uuid | PK | Identificador del umbral. |
-| patient_id | uuid | FK → patients (CASCADE), NN | Paciente. |
+| patient_id | uuid | FK → patients (RESTRICT), NN | Paciente. |
 | type | varchar(16) | FK → vital_types.code, NN | Tipo de signo vital. |
 | min_value | numeric(8,2) | | Límite inferior. NULL si solo hay techo. |
 | max_value | numeric(8,2) | | Límite superior. NULL si solo hay piso. |
-| updated_by | uuid | FK → users (SET NULL) | Quién configuró el umbral. |
+| updated_by | uuid | FK → users (RESTRICT) | Quién configuró el umbral. |
 | created_at | timestamptz | NN | Creación. |
 | updated_at | timestamptz | NN | Última modificación (trigger). |
 
@@ -218,7 +222,7 @@
 | Columna | Tipo | Restricciones | Descripción |
 |---|---|---|---|
 | id | uuid | PK | Identificador del snapshot. |
-| patient_id | uuid | FK → patients (CASCADE), NN | Paciente. |
+| patient_id | uuid | FK → patients (RESTRICT), NN | Paciente. |
 | snapshot_date | date | NN, UK (patient_id, date) | Día de la fotografía. |
 | status | varchar(12) | NN | ok / warning / attention. |
 | reasons | jsonb | NN, def. '[]' | Motivos legibles del estado (arreglo). |
@@ -236,7 +240,7 @@
 | Columna | Tipo | Restricciones | Descripción |
 |---|---|---|---|
 | id | uuid | PK | Identificador del medicamento. |
-| patient_id | uuid | FK → patients (CASCADE), NN | Paciente. |
+| patient_id | uuid | FK → patients (RESTRICT), NN | Paciente. |
 | name | varchar(120) | NN | Nombre del medicamento. |
 | dose_amount | numeric(8,2) | NN, CHECK > 0 | Cantidad de la dosis (ej. 50). |
 | dose_unit | varchar(20) | NN | Unidad: mg/g/ml/mcg/UI/gotas/… |
@@ -245,7 +249,7 @@
 | start_date | date | NN | Inicio del tratamiento. |
 | end_date | date | | Fin del tratamiento. Opcional. |
 | grace_window_min | smallint | NN, def. 60 (5–720) | Tolerancia antes de marcar como omitida. |
-| prescribed_by | uuid | FK → users (SET NULL) | Médico o cuidadora que definió el plan. |
+| prescribed_by | uuid | FK → users (RESTRICT) | Médico o cuidadora que definió el plan. |
 | discontinued_at | timestamptz | | Descontinuación. NULL = vigente. |
 | created_at | timestamptz | NN | Creación. |
 | updated_at | timestamptz | NN | Última modificación (trigger). |
@@ -255,14 +259,14 @@
 | Columna | Tipo | Restricciones | Descripción |
 |---|---|---|---|
 | id | uuid | PK | Identificador del horario. |
-| medication_id | uuid | FK → medications (CASCADE), NN | Medicamento. |
+| medication_id | uuid | FK → medications (RESTRICT), NN | Medicamento. |
 | time_of_day | time | NN, UK (medication_id, time_of_day) | Hora de toma (HH:MM). |
 
 ### Tabla: `medication_days` — Días habilitados (1FN)
 
 | Columna | Tipo | Restricciones | Descripción |
 |---|---|---|---|
-| medication_id | uuid | PK (medication_id, day_of_week), FK → medications (CASCADE) | Medicamento. |
+| medication_id | uuid | PK (medication_id, day_of_week), FK → medications (RESTRICT) | Medicamento. |
 | day_of_week | smallint | PK, CHECK 1–7 | 1=lunes … 7=domingo (ISO 8601). |
 
 ### Tabla: `scheduled_doses` — Tomas concretas programadas
@@ -270,11 +274,11 @@
 | Columna | Tipo | Restricciones | Descripción |
 |---|---|---|---|
 | id | uuid | PK | Identificador de la toma. |
-| medication_id | uuid | FK → medications (CASCADE), NN | Medicamento del que proviene. |
+| medication_id | uuid | FK → medications (RESTRICT), NN | Medicamento del que proviene. |
 | scheduled_at | timestamptz | NN, UK (medication_id, scheduled_at) | Cuándo DEBÍA administrarse (planificado). |
 | status | varchar(10) | NN, def. 'pending' | pending/taken/skipped/postponed/missed. |
 | administered_at | timestamptz | CHECK si taken; ≥ scheduled_at | Cuándo se administró REALMENTE (hecho clínico). |
-| logged_by | uuid | FK → users (SET NULL) | Quién registró la toma (responsabilidad). |
+| logged_by | uuid | FK → users (RESTRICT) | Quién registró la toma (responsabilidad). |
 | logged_at | timestamptz | | Cuándo se REGISTRÓ en la app (acto administrativo). |
 | reason | varchar(200) | obligatorio si skipped | Motivo de la omisión. |
 | postponed_until | timestamptz | ≤ scheduled_at + 4h | Nueva hora tras posponer. |
@@ -290,7 +294,7 @@
 | Columna | Tipo | Restricciones | Descripción |
 |---|---|---|---|
 | id | uuid | PK | Identificador de la alerta. |
-| patient_id | uuid | FK → patients (CASCADE), NN | Paciente. |
+| patient_id | uuid | FK → patients (RESTRICT), NN | Paciente. |
 | type | varchar(20) | NN | fall/vital_out_of_range/missed_dose/sos/wearable_offline. |
 | severity | varchar(10) | NN | info / warning / critical. |
 | title | varchar(120) | NN | Título de la alerta. |
@@ -298,9 +302,9 @@
 | payload | jsonb | | Datos que la originaron (atributos variables). |
 | dedup_key | varchar(60) | | Clave de deduplicación (misma causa en 30 min). |
 | status | varchar(12) | NN, def. 'active' | active / acknowledged / resolved. |
-| acknowledged_by | uuid | FK → users (SET NULL) | Quién atendió. |
+| acknowledged_by | uuid | FK → users (RESTRICT) | Quién atendió. |
 | acknowledged_at | timestamptz | | Momento de atención. |
-| resolved_by | uuid | FK → users (SET NULL) | Quién resolvió. |
+| resolved_by | uuid | FK → users (RESTRICT) | Quién resolvió. |
 | resolved_at | timestamptz | | Momento de resolución. |
 | resolution_note | varchar(500) | | Nota de resolución. |
 | escalated_at | timestamptz | | Momento de escalamiento (RF-52). |
@@ -314,9 +318,9 @@
 | Columna | Tipo | Restricciones | Descripción |
 |---|---|---|---|
 | id | uuid | PK | Identificador de la entrega. |
-| alert_id | uuid | FK → alerts (CASCADE), NN | Alerta notificada. |
-| user_id | uuid | FK → users (CASCADE), NN | Destinatario. |
-| push_device_id | uuid | FK → push_devices (SET NULL) | Dispositivo al que se envió. |
+| alert_id | uuid | FK → alerts (RESTRICT), NN | Alerta notificada. |
+| user_id | uuid | FK → users (RESTRICT), NN | Destinatario. |
+| push_device_id | uuid | FK → push_devices (RESTRICT) | Dispositivo al que se envió. |
 | channel | varchar(10) | NN, def. 'push' | push/email/sms/in_app. |
 | status | varchar(10) | NN, def. 'queued' | queued/sent/delivered/opened/failed. |
 | sent_at | timestamptz | | Enviado al proveedor. |
@@ -330,7 +334,7 @@
 | Columna | Tipo | Restricciones | Descripción |
 |---|---|---|---|
 | id | uuid | PK | Identificador. |
-| user_id | uuid | FK → users (CASCADE), NN | Usuario. |
+| user_id | uuid | FK → users (RESTRICT), NN | Usuario. |
 | alert_type | varchar(20) | NN, UK (user_id, alert_type) | Tipo de alerta. |
 | push_enabled | boolean | NN, def. true | Si recibe push de ese tipo. |
 | created_at | timestamptz | NN | Creación. |
@@ -343,7 +347,7 @@
 | Columna | Tipo | Restricciones | Descripción |
 |---|---|---|---|
 | id | uuid | PK | Identificador del contacto. |
-| patient_id | uuid | FK → patients (CASCADE), NN | Paciente. |
+| patient_id | uuid | FK → patients (RESTRICT), NN | Paciente. |
 | first_name | varchar(60) | NN | Nombre(s) del contacto. |
 | last_name | varchar(60) | NN | Apellido(s) del contacto. |
 | full_name | varchar(121) | GENERATED | Nombre completo calculado. Solo lectura. |
@@ -360,9 +364,9 @@
 | Columna | Tipo | Restricciones | Descripción |
 |---|---|---|---|
 | id | uuid | PK | Identificador del evento SOS. |
-| patient_id | uuid | FK → patients (CASCADE), NN | Paciente. |
-| triggered_by | uuid | FK → users (SET NULL) | Quién activó el SOS. |
-| alert_id | uuid | FK → alerts (CASCADE), NN, UK | Alerta crítica generada (una por SOS). |
+| patient_id | uuid | FK → patients (RESTRICT), NN | Paciente. |
+| triggered_by | uuid | FK → users (RESTRICT) | Quién activó el SOS. |
+| alert_id | uuid | FK → alerts (RESTRICT), NN, UK | Alerta crítica generada (una por SOS). |
 | note | varchar(300) | | Nota del evento. |
 | latitude | numeric(9,6) | −90 a 90 | Latitud al momento del SOS. |
 | longitude | numeric(9,6) | −180 a 180 | Longitud al momento del SOS. |
@@ -377,7 +381,7 @@
 | Columna | Tipo | Restricciones | Descripción |
 |---|---|---|---|
 | id | uuid | PK | Identificador de la suscripción. |
-| user_id | uuid | FK → users (CASCADE), NN | Usuario suscrito (cuidadora en v1). |
+| user_id | uuid | FK → users (RESTRICT), NN | Usuario suscrito (cuidadora en v1). |
 | plan | varchar(20) | NN | free / premium. |
 | status | varchar(20) | NN, def. 'active' | active/past_due/cancelled/expired. |
 | started_at | timestamptz | NN | Inicio de la suscripción. |
