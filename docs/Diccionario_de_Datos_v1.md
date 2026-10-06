@@ -94,6 +94,7 @@
 | condition | varchar(80) | NN, UK (patient_id, condition) | Padecimiento (ej. hipertension). |
 | diagnosed_at | date | | Fecha de diagnóstico. Opcional. |
 | created_at | timestamptz | NN | Fecha de registro. |
+| deleted_at | timestamptz | | Baja lógica. Condición corregida/remitida se desactiva; conserva histórico clínico. |
 
 ### Tabla: `patient_members` — Vínculo usuario↔paciente con rol (control de acceso)
 
@@ -214,6 +215,7 @@
 | updated_by | uuid | FK → users (RESTRICT) | Quién configuró el umbral. |
 | created_at | timestamptz | NN | Creación. |
 | updated_at | timestamptz | NN | Última modificación (trigger). |
+| deleted_at | timestamptz | | Baja lógica. Umbral reemplazado se desactiva; conserva histórico de rangos. |
 
 *UK: (patient_id, type). CHECK: min < max; al menos uno no nulo.*
 

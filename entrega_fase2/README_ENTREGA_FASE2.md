@@ -65,8 +65,8 @@ Fase 2/
 | `04_Diagrama_ER_Mermaid.md` | Diagrama ER que se renderiza directo en GitHub. |
 | `05_Normalizacion_2FN.md` | Documento de normalización hasta 2FN (respaldo de calidad del diseño). |
 | `06_Analisis_de_Realidad_y_Decisiones.md` | Análisis de realidad y decisiones de ingeniería (robustez del modelo). |
-| `07_Historias_de_Usuario.md` | Historias de usuario trazadas a RF y casos de uso. |
-| `08_schema_completo.sql` | Script SQL ejecutable del modelo completo (implementación verificable). |
+| `07_schema_completo.sql` | Script SQL ejecutable del modelo completo (implementación verificable). |
+| `09_Historias_de_Usuario.md` | Historias de usuario trazadas a RF y casos de uso (complemento). |
 
 ---
 

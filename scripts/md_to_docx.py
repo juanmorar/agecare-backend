@@ -138,6 +138,69 @@ def add_hr(doc):
     pPr.append(pbdr)
 
 
+def _set_field(paragraph, instr):
+    """Inserta un campo de Word (ej. PAGE, TOC) en un parrafo."""
+    run = paragraph.add_run()
+    fldBegin = OxmlElement('w:fldChar'); fldBegin.set(qn('w:fldCharType'), 'begin')
+    instrText = OxmlElement('w:instrText'); instrText.set(qn('xml:space'), 'preserve'); instrText.text = instr
+    fldSep = OxmlElement('w:fldChar'); fldSep.set(qn('w:fldCharType'), 'separate')
+    fldEnd = OxmlElement('w:fldChar'); fldEnd.set(qn('w:fldCharType'), 'end')
+    run._r.append(fldBegin); run._r.append(instrText); run._r.append(fldSep); run._r.append(fldEnd)
+
+
+def add_page_number_footer(doc):
+    """Pie de pagina con 'Pagina X' centrado, en todas las secciones."""
+    for section in doc.sections:
+        footer = section.footer
+        footer.is_linked_to_previous = False
+        p = footer.paragraphs[0] if footer.paragraphs else footer.add_paragraph()
+        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        r = p.add_run('Página '); r.font.size = Pt(9); r.font.color.rgb = RGBColor(0x80, 0x80, 0x80)
+        _set_field(p, 'PAGE')
+
+
+def add_cover_page(doc, title, subtitle=None):
+    """Portada: logo textual, titulo del documento, datos del equipo."""
+    for _ in range(5):
+        doc.add_paragraph()
+    p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    r = p.add_run('AgeCare'); r.bold = True; r.font.size = Pt(30); r.font.color.rgb = RGBColor(0x2E, 0x5A, 0x88)
+    p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    r = p.add_run('Plataforma digital integral de cuidado de adultos mayores')
+    r.italic = True; r.font.size = Pt(12); r.font.color.rgb = RGBColor(0x59, 0x59, 0x59)
+    doc.add_paragraph()
+    p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    r = p.add_run(title); r.bold = True; r.font.size = Pt(18)
+    if subtitle:
+        p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        r = p.add_run(subtitle); r.font.size = Pt(12); r.font.color.rgb = RGBColor(0x59, 0x59, 0x59)
+    for _ in range(6):
+        doc.add_paragraph()
+    datos = [
+        'Proyecto APT · Capstone PTY4614',
+        'Duoc UC · Escuela de Informática y Telecomunicaciones · Sede San Andrés de Concepción',
+        'Empresa contraparte: Alloxentric',
+        'Equipo: Javier Cerna Chávez · Benjamín Camus · Juan Mora',
+        'Docentes: Jazna Meza Hidalgo · Juan Pablo Mellado Alarcón',
+    ]
+    for d in datos:
+        p = doc.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        r = p.add_run(d); r.font.size = Pt(11)
+    doc.add_page_break()
+
+
+def add_toc(doc):
+    """Indice automatico (campo TOC de Word, se actualiza al abrir)."""
+    h = doc.add_paragraph(); r = h.add_run('Índice'); r.bold = True; r.font.size = Pt(16)
+    r.font.color.rgb = RGBColor(0x2E, 0x5A, 0x88)
+    p = doc.add_paragraph()
+    _set_field(p, 'TOC \\o "1-3" \\h \\z \\u')
+    note = doc.add_paragraph()
+    rr = note.add_run('(Clic derecho → Actualizar campos para numerar el índice)')
+    rr.italic = True; rr.font.size = Pt(8); rr.font.color.rgb = RGBColor(0xA0, 0xA0, 0xA0)
+    doc.add_page_break()
+
+
 def convert(md_path, docx_path):
     lines = Path(md_path).read_text(encoding='utf-8').splitlines()
     doc = Document()
@@ -146,6 +209,22 @@ def convert(md_path, docx_path):
     style = doc.styles['Normal']
     style.font.name = 'Calibri'
     style.font.size = Pt(11)
+    style.paragraph_format.line_spacing = 1.5
+
+    # Extraer titulo del documento: primer encabezado '# ...'
+    doc_title = None
+    for ln in lines:
+        m = re.match(r'^#\s+(.+)$', ln.strip())
+        if m:
+            doc_title = clean_gdocs_artifacts(m.group(1)).replace('*', '').strip()
+            break
+    if not doc_title:
+        doc_title = Path(md_path).stem
+
+    # Portada + indice + paginacion
+    add_cover_page(doc, doc_title, 'Avance Fase 2 · Diseño del Sistema')
+    add_toc(doc)
+    add_page_number_footer(doc)
 
     i = 0
     n = len(lines)

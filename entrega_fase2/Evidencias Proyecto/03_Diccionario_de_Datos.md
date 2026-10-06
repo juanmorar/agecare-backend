@@ -91,9 +91,10 @@
 |---|---|---|---|
 | id | uuid | PK | Identificador de la condición. |
 | patient_id | uuid | FK → patients (RESTRICT), NN | Paciente al que pertenece. |
-| condition | varchar(80) | NN, UK (patient_id, condition) | Padecimiento (ej. hipertension). |
+| condition | varchar(80) | NN, UK (patient_id, condition) vigente | Padecimiento (ej. hipertension). |
 | diagnosed_at | date | | Fecha de diagnóstico. Opcional. |
 | created_at | timestamptz | NN | Fecha de registro. |
+| deleted_at | timestamptz | | Baja lógica. Condición corregida/remitida se desactiva; conserva histórico clínico. |
 
 ### Tabla: `patient_members` — Vínculo usuario↔paciente con rol (control de acceso)
 
@@ -214,8 +215,9 @@
 | updated_by | uuid | FK → users (RESTRICT) | Quién configuró el umbral. |
 | created_at | timestamptz | NN | Creación. |
 | updated_at | timestamptz | NN | Última modificación (trigger). |
+| deleted_at | timestamptz | | Baja lógica. Umbral reemplazado se desactiva; conserva histórico de rangos. |
 
-*UK: (patient_id, type). CHECK: min < max; al menos uno no nulo.*
+*UK: (patient_id, type) solo vigentes (índice parcial WHERE deleted_at IS NULL). CHECK: min < max; al menos uno no nulo.*
 
 ### Tabla: `wellbeing_snapshots` — Historial diario del semáforo de bienestar
 
@@ -404,4 +406,4 @@
 | 3 · Medicación | medications, medication_times, medication_days, scheduled_doses | 4 |
 | 4 · Alertas y emergencias | alerts, alert_deliveries, notification_settings, emergency_contacts, sos_events | 5 |
 | 5 · Negocio (freemium) | subscriptions | 1 |
-| **Total** | | **24** |
+| **Total** | | **24    */?|

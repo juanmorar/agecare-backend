@@ -57,7 +57,7 @@ if __name__ == '__main__':
     targets = [
         SQL / 'schema' / '000_schema_completo.sql',
         ROOT / 'docs' / '000_schema_completo.sql',
-        ROOT / 'entrega_fase2' / 'Evidencias Proyecto' / '08_schema_completo.sql',
+        ROOT / 'entrega_fase2' / 'Evidencias Proyecto' / '07_schema_completo.sql',
     ]
     for t in targets:
         t.write_text(out, encoding='utf-8')
