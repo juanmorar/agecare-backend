@@ -1,0 +1,50 @@
+tabla,indice,definicion
+alert_deliveries,alert_deliveries_pkey,CREATE UNIQUE INDEX alert_deliveries_pkey ON public.alert_deliveries USING btree (id)
+alert_deliveries,ix_alert_deliveries_alert,CREATE INDEX ix_alert_deliveries_alert ON public.alert_deliveries USING btree (alert_id)
+alert_deliveries,ix_alert_deliveries_failed,CREATE INDEX ix_alert_deliveries_failed ON public.alert_deliveries USING btree (created_at) WHERE ((status)::text = 'failed'::text)
+alerts,alerts_pkey,CREATE UNIQUE INDEX alerts_pkey ON public.alerts USING btree (id)
+alerts,ix_alerts_dedup,"CREATE INDEX ix_alerts_dedup ON public.alerts USING btree (patient_id, dedup_key, created_at DESC) WHERE (dedup_key IS NOT NULL)"
+alerts,ix_alerts_patient_status,"CREATE INDEX ix_alerts_patient_status ON public.alerts USING btree (patient_id, status, created_at DESC)"
+alerts,ix_alerts_pending_critical,CREATE INDEX ix_alerts_pending_critical ON public.alerts USING btree (created_at) WHERE (((status)::text = 'active'::text) AND ((severity)::text = 'critical'::text))
+emergency_contacts,emergency_contacts_pkey,CREATE UNIQUE INDEX emergency_contacts_pkey ON public.emergency_contacts USING btree (id)
+emergency_contacts,ux_emergency_contacts_order,"CREATE UNIQUE INDEX ux_emergency_contacts_order ON public.emergency_contacts USING btree (patient_id, escalation_order) WHERE (deleted_at IS NULL)"
+invitations,invitations_pkey,CREATE UNIQUE INDEX invitations_pkey ON public.invitations USING btree (id)
+invitations,ix_invitations_patient,CREATE INDEX ix_invitations_patient ON public.invitations USING btree (patient_id)
+invitations,ux_invitations_pending,"CREATE UNIQUE INDEX ux_invitations_pending ON public.invitations USING btree (patient_id, lower((email)::text)) WHERE ((accepted_at IS NULL) AND (revoked_at IS NULL))"
+invitations,ux_invitations_token,CREATE UNIQUE INDEX ux_invitations_token ON public.invitations USING btree (token_hash)
+medications,ix_medications_patient_active,CREATE INDEX ix_medications_patient_active ON public.medications USING btree (patient_id) WHERE (discontinued_at IS NULL)
+medications,medications_pkey,CREATE UNIQUE INDEX medications_pkey ON public.medications USING btree (id)
+notification_settings,notification_settings_pkey,CREATE UNIQUE INDEX notification_settings_pkey ON public.notification_settings USING btree (id)
+notification_settings,uq_notification_settings_pair,"CREATE UNIQUE INDEX uq_notification_settings_pair ON public.notification_settings USING btree (user_id, alert_type)"
+patient_members,ix_patient_members_user,CREATE INDEX ix_patient_members_user ON public.patient_members USING btree (user_id) WHERE (removed_at IS NULL)
+patient_members,patient_members_pkey,CREATE UNIQUE INDEX patient_members_pkey ON public.patient_members USING btree (id)
+patient_members,uq_patient_members_pair,"CREATE UNIQUE INDEX uq_patient_members_pair ON public.patient_members USING btree (patient_id, user_id)"
+patient_members,ux_patient_members_owner,CREATE UNIQUE INDEX ux_patient_members_owner ON public.patient_members USING btree (patient_id) WHERE is_owner
+patients,patients_pkey,CREATE UNIQUE INDEX patients_pkey ON public.patients USING btree (id)
+patients,ux_patients_rut,CREATE UNIQUE INDEX ux_patients_rut ON public.patients USING btree (rut_number) WHERE ((deleted_at IS NULL) AND (rut_number IS NOT NULL))
+push_devices,ix_push_devices_user_active,CREATE INDEX ix_push_devices_user_active ON public.push_devices USING btree (user_id) WHERE is_active
+push_devices,push_devices_pkey,CREATE UNIQUE INDEX push_devices_pkey ON public.push_devices USING btree (id)
+push_devices,ux_push_devices_token,CREATE UNIQUE INDEX ux_push_devices_token ON public.push_devices USING btree (push_token)
+refresh_tokens,ix_refresh_tokens_expires,CREATE INDEX ix_refresh_tokens_expires ON public.refresh_tokens USING btree (expires_at)
+refresh_tokens,ix_refresh_tokens_family,CREATE INDEX ix_refresh_tokens_family ON public.refresh_tokens USING btree (family_id)
+refresh_tokens,ix_refresh_tokens_user_active,CREATE INDEX ix_refresh_tokens_user_active ON public.refresh_tokens USING btree (user_id) WHERE (revoked_at IS NULL)
+refresh_tokens,refresh_tokens_pkey,CREATE UNIQUE INDEX refresh_tokens_pkey ON public.refresh_tokens USING btree (id)
+refresh_tokens,ux_refresh_tokens_hash,CREATE UNIQUE INDEX ux_refresh_tokens_hash ON public.refresh_tokens USING btree (token_hash)
+scheduled_doses,ix_scheduled_doses_patient_time,"CREATE INDEX ix_scheduled_doses_patient_time ON public.scheduled_doses USING btree (patient_id, scheduled_at DESC)"
+scheduled_doses,ix_scheduled_doses_pending,CREATE INDEX ix_scheduled_doses_pending ON public.scheduled_doses USING btree (scheduled_at) WHERE ((status)::text = 'pending'::text)
+scheduled_doses,scheduled_doses_pkey,CREATE UNIQUE INDEX scheduled_doses_pkey ON public.scheduled_doses USING btree (id)
+scheduled_doses,uq_scheduled_doses_slot,"CREATE UNIQUE INDEX uq_scheduled_doses_slot ON public.scheduled_doses USING btree (medication_id, scheduled_at)"
+sos_events,ix_sos_events_patient,"CREATE INDEX ix_sos_events_patient ON public.sos_events USING btree (patient_id, created_at DESC)"
+sos_events,sos_events_pkey,CREATE UNIQUE INDEX sos_events_pkey ON public.sos_events USING btree (id)
+sos_events,uq_sos_events_alert,CREATE UNIQUE INDEX uq_sos_events_alert ON public.sos_events USING btree (alert_id)
+users,users_pkey,CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)
+users,ux_users_email_lower,CREATE UNIQUE INDEX ux_users_email_lower ON public.users USING btree (lower((email)::text))
+vital_readings,ix_vital_readings_series,"CREATE INDEX ix_vital_readings_series ON ONLY public.vital_readings USING btree (patient_id, type, measured_at DESC)"
+vital_readings,pk_vital_readings,"CREATE UNIQUE INDEX pk_vital_readings ON ONLY public.vital_readings USING btree (id, measured_at)"
+vital_readings,uq_vital_readings_natural,"CREATE UNIQUE INDEX uq_vital_readings_natural ON ONLY public.vital_readings USING btree (patient_id, type, measured_at, source)"
+vital_thresholds,uq_vital_thresholds_patient_type,"CREATE UNIQUE INDEX uq_vital_thresholds_patient_type ON public.vital_thresholds USING btree (patient_id, type)"
+vital_thresholds,vital_thresholds_pkey,CREATE UNIQUE INDEX vital_thresholds_pkey ON public.vital_thresholds USING btree (id)
+wearables,ix_wearables_last_sync,CREATE INDEX ix_wearables_last_sync ON public.wearables USING btree (last_sync_at) WHERE (unlinked_at IS NULL)
+wearables,ux_wearables_patient_active,CREATE UNIQUE INDEX ux_wearables_patient_active ON public.wearables USING btree (patient_id) WHERE (unlinked_at IS NULL)
+wearables,ux_wearables_serial_active,"CREATE UNIQUE INDEX ux_wearables_serial_active ON public.wearables USING btree (provider, serial_number) WHERE (unlinked_at IS NULL)"
+wearables,wearables_pkey,CREATE UNIQUE INDEX wearables_pkey ON public.wearables USING btree (id)

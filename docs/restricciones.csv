@@ -1,0 +1,107 @@
+tabla,restriccion,tipo,definicion
+alert_deliveries,ck_alert_deliveries_channel,Validacion,"CHECK (((channel)::text = ANY ((ARRAY['push'::character varying, 'email'::character varying, 'sms'::character varying, 'in_app'::character varying])::text[])))"
+alert_deliveries,ck_alert_deliveries_failed,Validacion,CHECK ((((status)::text <> 'failed'::text) OR (error_detail IS NOT NULL)))
+alert_deliveries,ck_alert_deliveries_order,Validacion,CHECK ((((delivered_at IS NULL) OR (sent_at IS NULL) OR (delivered_at >= sent_at)) AND ((opened_at IS NULL) OR (delivered_at IS NULL) OR (opened_at >= delivered_at))))
+alert_deliveries,ck_alert_deliveries_status,Validacion,"CHECK (((status)::text = ANY ((ARRAY['queued'::character varying, 'sent'::character varying, 'delivered'::character varying, 'opened'::character varying, 'failed'::character varying])::text[])))"
+alert_deliveries,fk_alert_deliveries_alert,Clave foranea,FOREIGN KEY (alert_id) REFERENCES alerts(id) ON DELETE CASCADE
+alert_deliveries,fk_alert_deliveries_device,Clave foranea,FOREIGN KEY (push_device_id) REFERENCES push_devices(id) ON DELETE SET NULL
+alert_deliveries,fk_alert_deliveries_user,Clave foranea,FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+alert_deliveries,alert_deliveries_pkey,Clave primaria,PRIMARY KEY (id)
+alerts,ck_alerts_ack_pair,Validacion,CHECK (((acknowledged_at IS NULL) = (acknowledged_by IS NULL)))
+alerts,ck_alerts_order,Validacion,CHECK (((resolved_at IS NULL) OR (acknowledged_at IS NULL) OR (resolved_at >= acknowledged_at)))
+alerts,ck_alerts_resolved_pair,Validacion,CHECK (((resolved_at IS NULL) = (resolved_by IS NULL)))
+alerts,ck_alerts_severity,Validacion,"CHECK (((severity)::text = ANY ((ARRAY['info'::character varying, 'warning'::character varying, 'critical'::character varying])::text[])))"
+alerts,ck_alerts_status,Validacion,"CHECK (((status)::text = ANY ((ARRAY['active'::character varying, 'acknowledged'::character varying, 'resolved'::character varying])::text[])))"
+alerts,ck_alerts_status_ack,Validacion,CHECK ((((status)::text = 'active'::text) OR (acknowledged_at IS NOT NULL)))
+alerts,ck_alerts_status_resolved,Validacion,CHECK ((((status)::text <> 'resolved'::text) OR (resolved_at IS NOT NULL)))
+alerts,ck_alerts_type,Validacion,"CHECK (((type)::text = ANY ((ARRAY['fall'::character varying, 'vital_out_of_range'::character varying, 'missed_dose'::character varying, 'sos'::character varying, 'wearable_offline'::character varying])::text[])))"
+alerts,fk_alerts_acknowledged_by,Clave foranea,FOREIGN KEY (acknowledged_by) REFERENCES users(id) ON DELETE SET NULL
+alerts,fk_alerts_patient,Clave foranea,FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE
+alerts,fk_alerts_resolved_by,Clave foranea,FOREIGN KEY (resolved_by) REFERENCES users(id) ON DELETE SET NULL
+alerts,alerts_pkey,Clave primaria,PRIMARY KEY (id)
+emergency_contacts,ck_emergency_contacts_order,Validacion,CHECK (((escalation_order >= 1) AND (escalation_order <= 10)))
+emergency_contacts,ck_emergency_contacts_phone,Validacion,"CHECK (((phone)::text ~ '^\+[0-9]{8,15}$'::text))"
+emergency_contacts,fk_emergency_contacts_patient,Clave foranea,FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE
+emergency_contacts,emergency_contacts_pkey,Clave primaria,PRIMARY KEY (id)
+invitations,ck_invitations_accepted_pair,Validacion,CHECK (((accepted_at IS NULL) = (accepted_by IS NULL)))
+invitations,ck_invitations_expires,Validacion,CHECK ((expires_at > created_at))
+invitations,ck_invitations_not_both,Validacion,CHECK ((NOT ((accepted_at IS NOT NULL) AND (revoked_at IS NOT NULL))))
+invitations,ck_invitations_role,Validacion,"CHECK (((role)::text = ANY ((ARRAY['family'::character varying, 'caregiver'::character varying, 'doctor'::character varying, 'elder'::character varying])::text[])))"
+invitations,fk_invitations_accepted_by,Clave foranea,FOREIGN KEY (accepted_by) REFERENCES users(id) ON DELETE SET NULL
+invitations,fk_invitations_invited_by,Clave foranea,FOREIGN KEY (invited_by) REFERENCES users(id) ON DELETE CASCADE
+invitations,fk_invitations_patient,Clave foranea,FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE
+invitations,invitations_pkey,Clave primaria,PRIMARY KEY (id)
+medications,ck_medications_dates,Validacion,CHECK (((end_date IS NULL) OR (end_date >= start_date)))
+medications,ck_medications_days_array,Validacion,CHECK (((jsonb_typeof(days_of_week) = 'array'::text) AND (jsonb_array_length(days_of_week) > 0)))
+medications,ck_medications_grace,Validacion,CHECK (((grace_window_min >= 5) AND (grace_window_min <= 720)))
+medications,ck_medications_times_array,Validacion,CHECK (((jsonb_typeof(times) = 'array'::text) AND (jsonb_array_length(times) > 0)))
+medications,fk_medications_patient,Clave foranea,FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE
+medications,fk_medications_prescriber,Clave foranea,FOREIGN KEY (prescribed_by) REFERENCES users(id) ON DELETE SET NULL
+medications,medications_pkey,Clave primaria,PRIMARY KEY (id)
+notification_settings,ck_notification_settings_critical_locked,Validacion,"CHECK ((push_enabled OR ((alert_type)::text <> ALL ((ARRAY['fall'::character varying, 'sos'::character varying])::text[]))))"
+notification_settings,ck_notification_settings_type,Validacion,"CHECK (((alert_type)::text = ANY ((ARRAY['fall'::character varying, 'vital_out_of_range'::character varying, 'missed_dose'::character varying, 'sos'::character varying, 'wearable_offline'::character varying])::text[])))"
+notification_settings,fk_notification_settings_user,Clave foranea,FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+notification_settings,notification_settings_pkey,Clave primaria,PRIMARY KEY (id)
+notification_settings,uq_notification_settings_pair,Unico,"UNIQUE (user_id, alert_type)"
+patient_members,ck_patient_members_owner_is_family,Validacion,CHECK (((NOT is_owner) OR ((role)::text = 'family'::text)))
+patient_members,ck_patient_members_role,Validacion,"CHECK (((role)::text = ANY ((ARRAY['family'::character varying, 'caregiver'::character varying, 'doctor'::character varying, 'elder'::character varying])::text[])))"
+patient_members,fk_patient_members_patient,Clave foranea,FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE
+patient_members,fk_patient_members_user,Clave foranea,FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+patient_members,patient_members_pkey,Clave primaria,PRIMARY KEY (id)
+patient_members,uq_patient_members_pair,Unico,"UNIQUE (patient_id, user_id)"
+patients,ck_patients_birth_date,Validacion,CHECK (((birth_date > '1900-01-01'::date) AND (birth_date <= CURRENT_DATE)))
+patients,ck_patients_conditions_array,Validacion,CHECK ((jsonb_typeof(conditions) = 'array'::text))
+patients,ck_patients_full_name_min,Validacion,CHECK ((char_length((full_name)::text) >= 2))
+patients,ck_patients_rut_dv,Validacion,CHECK (((rut_dv IS NULL) OR (rut_dv ~ '^[0-9K]$'::text)))
+patients,ck_patients_rut_number,Validacion,CHECK (((rut_number IS NULL) OR ((rut_number >= 1000000) AND (rut_number <= 99999999))))
+patients,ck_patients_rut_pair,Validacion,CHECK (((rut_number IS NULL) = (rut_dv IS NULL)))
+patients,ck_patients_sex,Validacion,"CHECK ((sex = ANY (ARRAY['M'::bpchar, 'F'::bpchar, 'O'::bpchar])))"
+patients,patients_pkey,Clave primaria,PRIMARY KEY (id)
+push_devices,ck_push_devices_platform,Validacion,"CHECK (((platform)::text = ANY ((ARRAY['ios'::character varying, 'android'::character varying, 'web'::character varying])::text[])))"
+push_devices,fk_push_devices_user,Clave foranea,FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+push_devices,push_devices_pkey,Clave primaria,PRIMARY KEY (id)
+refresh_tokens,ck_refresh_tokens_expires,Validacion,CHECK ((expires_at > created_at))
+refresh_tokens,ck_refresh_tokens_revoked_pair,Validacion,CHECK (((revoked_at IS NULL) = (revoked_reason IS NULL)))
+refresh_tokens,ck_refresh_tokens_revoked_reason,Validacion,"CHECK (((revoked_reason IS NULL) OR ((revoked_reason)::text = ANY ((ARRAY['rotated'::character varying, 'logout'::character varying, 'reuse_detected'::character varying, 'password_reset'::character varying, 'account_disabled'::character varying])::text[]))))"
+refresh_tokens,fk_refresh_tokens_user,Clave foranea,FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+refresh_tokens,refresh_tokens_pkey,Clave primaria,PRIMARY KEY (id)
+scheduled_doses,ck_scheduled_doses_logged_pair,Validacion,CHECK (((logged_at IS NULL) = (logged_by IS NULL)))
+scheduled_doses,ck_scheduled_doses_logged_status,Validacion,"CHECK ((((status)::text <> ALL ((ARRAY['taken'::character varying, 'skipped'::character varying])::text[])) OR (logged_at IS NOT NULL)))"
+scheduled_doses,ck_scheduled_doses_postpone_limit,Validacion,CHECK (((postponed_until IS NULL) OR (postponed_until <= (scheduled_at + '04:00:00'::interval))))
+scheduled_doses,ck_scheduled_doses_postponed,Validacion,CHECK ((((status)::text <> 'postponed'::text) OR (postponed_until IS NOT NULL)))
+scheduled_doses,ck_scheduled_doses_skip_reason,Validacion,CHECK ((((status)::text <> 'skipped'::text) OR (reason IS NOT NULL)))
+scheduled_doses,ck_scheduled_doses_status,Validacion,"CHECK (((status)::text = ANY ((ARRAY['pending'::character varying, 'taken'::character varying, 'skipped'::character varying, 'postponed'::character varying, 'missed'::character varying])::text[])))"
+scheduled_doses,fk_scheduled_doses_medication,Clave foranea,FOREIGN KEY (medication_id) REFERENCES medications(id) ON DELETE CASCADE
+scheduled_doses,fk_scheduled_doses_patient,Clave foranea,FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE
+scheduled_doses,fk_scheduled_doses_user,Clave foranea,FOREIGN KEY (logged_by) REFERENCES users(id) ON DELETE SET NULL
+scheduled_doses,scheduled_doses_pkey,Clave primaria,PRIMARY KEY (id)
+scheduled_doses,uq_scheduled_doses_slot,Unico,"UNIQUE (medication_id, scheduled_at)"
+sos_events,ck_sos_events_coords,Validacion,CHECK (((latitude IS NULL) = (longitude IS NULL)))
+sos_events,ck_sos_events_lat,Validacion,CHECK (((latitude IS NULL) OR ((latitude >= ('-90'::integer)::numeric) AND (latitude <= (90)::numeric))))
+sos_events,ck_sos_events_lng,Validacion,CHECK (((longitude IS NULL) OR ((longitude >= ('-180'::integer)::numeric) AND (longitude <= (180)::numeric))))
+sos_events,fk_sos_events_alert,Clave foranea,FOREIGN KEY (alert_id) REFERENCES alerts(id) ON DELETE CASCADE
+sos_events,fk_sos_events_patient,Clave foranea,FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE
+sos_events,fk_sos_events_user,Clave foranea,FOREIGN KEY (triggered_by) REFERENCES users(id) ON DELETE SET NULL
+sos_events,sos_events_pkey,Clave primaria,PRIMARY KEY (id)
+sos_events,uq_sos_events_alert,Unico,UNIQUE (alert_id)
+users,ck_users_full_name_min,Validacion,CHECK ((char_length((full_name)::text) >= 2))
+users,ck_users_locale,Validacion,"CHECK (((locale)::text = ANY ((ARRAY['es'::character varying, 'en'::character varying])::text[])))"
+users,users_pkey,Clave primaria,PRIMARY KEY (id)
+vital_readings,ck_vital_readings_secondary,Validacion,CHECK (((value_secondary IS NULL) OR ((type)::text = 'blood_pressure'::text)))
+vital_readings,ck_vital_readings_source,Validacion,"CHECK (((source)::text = ANY ((ARRAY['wearable'::character varying, 'manual'::character varying])::text[])))"
+vital_readings,ck_vital_readings_type,Validacion,"CHECK (((type)::text = ANY ((ARRAY['heart_rate'::character varying, 'spo2'::character varying, 'sleep'::character varying, 'steps'::character varying, 'sedentary_min'::character varying, 'fall_event'::character varying, 'blood_pressure'::character varying, 'temperature'::character varying, 'glucose'::character varying])::text[])))"
+vital_readings,fk_vital_readings_patient,Clave foranea,FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE
+vital_readings,pk_vital_readings,Clave primaria,"PRIMARY KEY (id, measured_at)"
+vital_readings,uq_vital_readings_natural,Unico,"UNIQUE (patient_id, type, measured_at, source)"
+vital_thresholds,ck_vital_thresholds_at_least_one,Validacion,CHECK (((min_value IS NOT NULL) OR (max_value IS NOT NULL)))
+vital_thresholds,ck_vital_thresholds_range,Validacion,CHECK (((min_value IS NULL) OR (max_value IS NULL) OR (min_value < max_value)))
+vital_thresholds,ck_vital_thresholds_type,Validacion,"CHECK (((type)::text = ANY ((ARRAY['heart_rate'::character varying, 'spo2'::character varying, 'sleep'::character varying, 'steps'::character varying, 'sedentary_min'::character varying, 'fall_event'::character varying, 'blood_pressure'::character varying, 'temperature'::character varying, 'glucose'::character varying])::text[])))"
+vital_thresholds,fk_vital_thresholds_patient,Clave foranea,FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE
+vital_thresholds,fk_vital_thresholds_user,Clave foranea,FOREIGN KEY (updated_by) REFERENCES users(id) ON DELETE SET NULL
+vital_thresholds,vital_thresholds_pkey,Clave primaria,PRIMARY KEY (id)
+vital_thresholds,uq_vital_thresholds_patient_type,Unico,"UNIQUE (patient_id, type)"
+wearables,ck_wearables_battery,Validacion,CHECK (((battery_pct IS NULL) OR ((battery_pct >= 0) AND (battery_pct <= 100))))
+wearables,ck_wearables_provider,Validacion,"CHECK (((provider)::text = ANY ((ARRAY['simulator'::character varying, 'healthkit'::character varying, 'health_connect'::character varying, 'garmin'::character varying, 'whoop'::character varying])::text[])))"
+wearables,ck_wearables_unlinked,Validacion,CHECK (((unlinked_at IS NULL) OR (unlinked_at >= created_at)))
+wearables,fk_wearables_patient,Clave foranea,FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE
+wearables,wearables_pkey,Clave primaria,PRIMARY KEY (id)
